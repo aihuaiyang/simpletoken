@@ -14,7 +14,7 @@
                 "Huaiyang\\SimpleToken\\SimpleTokenServiceProvider"
             ],
             "aliases": {
-                "Functions": "Huaiyang\\SimpleToken\\Facades\\SimpleToken"
+                "SimpleToken": "Huaiyang\\SimpleToken\\Facades\\SimpleToken"
             }
         }
     }
