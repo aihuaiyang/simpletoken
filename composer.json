@@ -7,15 +7,5 @@
             "email": "873811021@qq.com"
         }
     ],
-    "require": {},
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Huaiyang\\SimpleToken\\SimpleTokenServiceProvider"
-            ],
-            "aliases": {
-                "SimpleToken": "Huaiyang\\SimpleToken\\Facades\\SimpleToken"
-            }
-        }
-    }
+    "require": {}
 }
