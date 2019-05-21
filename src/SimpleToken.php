@@ -9,7 +9,12 @@ use Illuminate\Http\Response;
 
 use Ramsey\Uuid\Uuid;
 
-
+/**
+ *
+ * token处理
+ * Class SimpleToken
+ * @package Huaiyang\SimpleToken
+ */
 class SimpleToken
 {
 
@@ -24,10 +29,6 @@ class SimpleToken
     public function __construct()
     {
 
-        if ('production' == config('app.env')) {
-            $this->env = false;
-        }
-
         $this->blackList = new BlackList();
     }
 
@@ -35,7 +36,7 @@ class SimpleToken
     {
 
 
-
+        echo 'hello simpleToken';
 
     }
 

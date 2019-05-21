@@ -2,9 +2,12 @@
 
 namespace Huaiyang\SimpleToken;
 
-use Ramsey\Uuid\Uuid;
-
-
+/**
+ *
+ * token 失效黑名单
+ * Class BlackList
+ * @package Huaiyang\SimpleToken
+ */
 class BlackList
 {
 

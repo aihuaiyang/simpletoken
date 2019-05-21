@@ -2,7 +2,12 @@
 
 namespace Huaiyang\SimpleToken;
 
-
+/**
+ *
+ * 单点登录
+ * Class Sso
+ * @package Huaiyang\SimpleToken
+ */
 class Sso
 {
 

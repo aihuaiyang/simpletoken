@@ -4,9 +4,15 @@ namespace Huaiyang\SimpleToken;
 
 use Cache;
 
+/**
+ *
+ * 缓存
+ * Class SimpleTokenCache
+ * @package Huaiyang\SimpleToken
+ */
 class SimpleTokenCache
 {
-
+    
     private $cacheDriver = null;
 
     private $prefix = 'simpletoken:';
@@ -18,22 +24,13 @@ class SimpleTokenCache
         $this->cacheDriver = config('cache.default');
 
         if ('file' == $this->cacheDriver) {
+            //如果是文件驱动的缓存。清除缓存已过期但未删除的缓存数据
             $this -> clearExpirationTimeFile();
         }
+
     }
 
 
-
-    public function putBlackList($key,$value,$blacklistGracePeriod){
-
-        $key = $this -> basePrefix($key);
-
-        if(Cache::has($key)){
-            return true;
-        }else{
-            $this -> cachePut($key,$value,$blacklistGracePeriod);
-        }
-    }
     /**
      *
      * 缓存文件
@@ -46,6 +43,7 @@ class SimpleTokenCache
 
         $key = $this -> basePrefix($key);
 
+        $this -> cacheKeys($key);
         return Cache::put($key,$value,$expirationTime);
     }
 
@@ -66,18 +64,23 @@ class SimpleTokenCache
 
     /**
      * 清理文件缓存驱动已过期的缓存文件
+     * 此方法针对缓存驱动是文件的，如果缓存后不访问文件。即使过期也不会删除
+     * redis等可以自行过期删除的不会调用此方法
      */
     public function clearExpirationTimeFile(){
 
-        $cacheListSerialize = Cache::get('SimpleTokenCacheList');
+        $keys = $this -> getCacheKeys();
 
-        $cacheList = unserialize($cacheListSerialize);
-
-        if(false !== $cacheList){
-            foreach ($cacheList as $v){
-                Cache::get($v);
+        foreach ($keys as $k => $v){
+            $value = Cache::get($v,null);
+            if($value === null){
+                unset($keys[$k]);
             }
         }
+
+        $key = $this -> prefix.'keys';
+
+        Cache::forever($key,serialize($keys));
 
     }
 
@@ -89,5 +92,34 @@ class SimpleTokenCache
     private function basePrefix($key){
 
         return $this -> prefix.$key;
+    }
+
+    /**
+     *
+     * 缓存所有的Key
+     * @param $key
+     */
+    private function cacheKeys($cacheKey){
+
+        $keys = $this -> getCacheKeys();
+
+        array_push($keys,$cacheKey);
+
+        $key = $this -> prefix.'keys';
+
+        Cache::forever($key,serialize($keys));
+
+    }
+
+    /**
+     *  获取所有的keys
+     */
+    private function getCacheKeys(){
+
+        $key = $this -> prefix.'keys';
+
+        $keys = Cache::get($key,serialize([]));
+
+        return unserialize($keys);
     }
 }
