@@ -43,7 +43,11 @@ class SimpleTokenCache
 
         $key = $this -> basePrefix($key);
 
-        $this -> cacheKeys($key);
+        if ('file' == $this->cacheDriver) {
+            //如果是文件驱动的缓存。缓存所有的key
+            $this -> cacheKeys($key);
+        }
+
         return Cache::put($key,$value,$expirationTime);
     }
 

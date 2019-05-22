@@ -5,7 +5,7 @@ namespace Huaiyang\SimpleToken;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-
+use Illuminate\Contracts\Encryption\DecryptException;
 
 use Ramsey\Uuid\Uuid;
 
@@ -115,9 +115,16 @@ class SimpleToken
     public function verifyToken($token)
     {
 
+
         $response['result'] = 0;
         //获取解构好的token
         $tokenArr = $this->decodeToken($token);
+
+        if(false === $tokenArr){
+            $response['message'] = 'Token无法解密';
+            $response['error_code'] = '1000';
+            return $response;
+        }
 
 
         /*根据当前角色判断是否开启了异步宽限期*/
@@ -249,6 +256,12 @@ class SimpleToken
         //获取解构好的token
         $tokenArr = $this->decodeToken($token);
 
+        if(false === $tokenArr){
+            $response['message'] = 'Token无法解密';
+            $response['error_code'] = '1000';
+            return $response;
+        }
+
         //刷新token
         $uuid = $this->getUuid4();
         $tokenArr['public']['expiration_time'] = time() + $this->config['expiration_time'];
@@ -271,6 +284,7 @@ class SimpleToken
         //加密
         $tokenStr = encrypt($tokenArr);
 
+        $tokenArr['uuid'] = $uuid;
         $tokenArr['tokenStr'] = $tokenStr;
         return $tokenArr;
     }
@@ -280,10 +294,16 @@ class SimpleToken
      * @param $token
      * @return mixed
      */
-    public function decodeToken($token)
+    private function decodeToken($token)
     {
 
-        return decrypt($token);
+        try {
+            $tokenArr = decrypt($token);
+        } catch (DecryptException $e) {
+            $tokenArr = false;
+        }
+
+        return $tokenArr;
     }
 
     /**
